@@ -1,0 +1,4 @@
+patient,sex,status,sample,lane,fastq_1,fastq_2
+PG0001,NA,0,PG0001,L001,s3://REPLACE-ME/pgpuk/PG0001/PG0001_R1.fastq.gz,s3://REPLACE-ME/pgpuk/PG0001/PG0001_R2.fastq.gz
+PG0002,NA,0,PG0002,L001,s3://REPLACE-ME/pgpuk/PG0002/PG0002_R1.fastq.gz,s3://REPLACE-ME/pgpuk/PG0002/PG0002_R2.fastq.gz
+PG0003,NA,0,PG0003,L001,s3://REPLACE-ME/pgpuk/PG0003/PG0003_R1.fastq.gz,s3://REPLACE-ME/pgpuk/PG0003/PG0003_R2.fastq.gz

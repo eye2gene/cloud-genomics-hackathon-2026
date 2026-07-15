@@ -1,0 +1,5 @@
+{
+  "createVpc": true,
+  "existingBucket": false,
+  "buildNextflowImage": true
+}

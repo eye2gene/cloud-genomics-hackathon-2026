@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
+"""CDK app entry point for Nextflow on AWS Batch.
+
+Ported from ``bin/aws_batch_squared.ts``. Loads configuration from context,
+validates it, and instantiates the top-level orchestration stack.
+"""
 import os
 
 import aws_cdk as cdk
 
-from aws_batch_squared_py.aws_batch_squared_py_stack import AwsBatchSquaredPyStack
+from aws_batch_squared_py.config import NextflowBatchConfig
+from aws_batch_squared_py.nextflow_batch_stack import NextflowBatchStack
 
 
 app = cdk.App()
-AwsBatchSquaredPyStack(app, "AwsBatchSquaredPyStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# Load configuration from context or use defaults (validation runs inside).
+config = NextflowBatchConfig.from_context(app)
 
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+env = cdk.Environment(
+    account=os.getenv("CDK_DEFAULT_ACCOUNT"),
+    region=os.getenv("CDK_DEFAULT_REGION") or "eu-west-2",
+)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# Create the main stack that orchestrates all nested stacks.
+NextflowBatchStack(
+    app,
+    "NextflowBatchStack",
+    config=config,
+    env=env,
+    description="Deploys a base genomics workflow architecture for Nextflow on AWS Batch",
+)
 
 app.synth()
