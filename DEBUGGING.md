@@ -38,14 +38,14 @@ scripts/nf-debug.sh build-logs             # latest head-node image build (CodeB
 
 Names below assume `<ns>` = your `NF_NAMESPACE`.
 
-| Component | Where it logs | How to read it |
-| --- | --- | --- |
-| **Head node** (Nextflow driver) | CloudWatch `/aws/batch/job`, stream `nextflow-<ns>/default/<hash>` | `nf-debug.sh logs <job-id>` |
-| **Child process jobs** | CloudWatch `/aws/batch/job`, one stream per job | `nf-debug.sh logs <child-job-id>` |
+| Component                                              | Where it logs                                                                                                                     | How to read it                                                   |
+| --------------------------------------------------------| -----------------------------------------------------------------------------------------------------------------------------------| ------------------------------------------------------------------|
+| **Head node** (Nextflow driver)                        | CloudWatch `/aws/batch/job`, stream `nextflow-<ns>/default/<hash>`                                                                | `nf-debug.sh logs <job-id>`                                      |
+| **Child process jobs**                                 | CloudWatch `/aws/batch/job`, one stream per job                                                                                   | `nf-debug.sh logs <child-job-id>`                                |
 | **Compute instance bootstrap** (cloud-init, ECS agent) | CloudWatch `/aws/ecs/container-instance/<ns>/<instance-id>/{cloud-init-output,ecs-agent,ecs-init,...}.log` **and** on-box via SSM | `nf-debug.sh bootstrap-logs <i-id>` or `nf-debug.sh diag <i-id>` |
-| **Head-node image build** | CloudWatch `/aws/codebuild/nextflow-image-build-<ns>` | `nf-debug.sh build-logs` |
-| **Image-build trigger** | CloudWatch `/aws/lambda/nextflow-image-build-trigger-<ns>` | AWS console / `aws logs tail` |
-| **Compute-env / queue status** | AWS Batch control plane (not a log) | `nf-debug.sh status` |
+| **Head-node image build**                              | CloudWatch `/aws/codebuild/nextflow-image-build-<ns>`                                                                             | `nf-debug.sh build-logs`                                         |
+| **Image-build trigger**                                | CloudWatch `/aws/lambda/nextflow-image-build-trigger-<ns>`                                                                        | AWS console / `aws logs tail`                                    |
+| **Compute-env / queue status**                         | AWS Batch control plane (not a log)                                                                                               | `nf-debug.sh status`                                             |
 
 > The bootstrap logs land in CloudWatch **only after** the CloudWatch agent starts. If a node dies
 > very early (or never finishes cloud-init), CloudWatch may be empty — use `diag`/`ssm` to look on the
@@ -154,14 +154,14 @@ aws ssm get-command-invocation --command-id "$CID" --instance-id <instance-id> \
 
 **What to check on a compute instance:**
 
-| Question | Command on the box |
-| --- | --- |
-| Is the ECS agent running? | `systemctl is-active ecs` (should be `active`) |
-| Which cluster is it joining? | `cat /etc/ecs/ecs.config` (look for `ECS_CLUSTER=`) |
-| Is the agent healthy? | `curl -s http://localhost:51678/v1/metadata` |
-| Did cloud-init finish? | `cloud-init status --long` (`done` vs `running`) |
+| Question                       | Command on the box                                   |
+| --------------------------------| ------------------------------------------------------|
+| Is the ECS agent running?      | `systemctl is-active ecs` (should be `active`)       |
+| Which cluster is it joining?   | `cat /etc/ecs/ecs.config` (look for `ECS_CLUSTER=`)  |
+| Is the agent healthy?          | `curl -s http://localhost:51678/v1/metadata`         |
+| Did cloud-init finish?         | `cloud-init status --long` (`done` vs `running`)     |
 | Is something blocking startup? | `systemctl list-jobs` (look for `waiting`/`running`) |
-| Where did the bootstrap stop? | `tail -n 50 /var/log/cloud-init-output.log` |
+| Where did the bootstrap stop?  | `tail -n 50 /var/log/cloud-init-output.log`          |
 
 **Find a node to target:** `scripts/nf-debug.sh instances`, or the EC2 console filtered by tag
 `Name = <ns>-compute-instance`.
@@ -170,14 +170,14 @@ aws ssm get-command-invocation --command-id "$CID" --instance-id <instance-id> \
 
 Derived from `NF_NAMESPACE` (`<ns>`) and `groupName`:
 
-| Resource | Name |
-| --- | --- |
-| On-Demand queue | `OnDemand-<ns>` |
-| Spot queue | `Spot-<ns>` |
-| Compute environments | `ondemand-<ns>-vN` / `spot-<ns>-vN` (N bumps on forced replacement) |
-| Head-node job definition | `nextflow-<ns>` |
-| Head-node ECR repo | `nextflow-head-<ns>` |
-| Job log group | `/aws/batch/job` |
-| Instance log group | `/aws/ecs/container-instance/<ns>` |
-| Image-build project | `nextflow-image-build-<ns>` |
-| Work/results bucket | `<groupName>-<ns>-<account-id>` (or your `s3BucketName`) |
+| Resource                 | Name                                                                |
+| --------------------------| ---------------------------------------------------------------------|
+| On-Demand queue          | `OnDemand-<ns>`                                                     |
+| Spot queue               | `Spot-<ns>`                                                         |
+| Compute environments     | `ondemand-<ns>-vN` / `spot-<ns>-vN` (N bumps on forced replacement) |
+| Head-node job definition | `nextflow-<ns>`                                                     |
+| Head-node ECR repo       | `nextflow-head-<ns>`                                                |
+| Job log group            | `/aws/batch/job`                                                    |
+| Instance log group       | `/aws/ecs/container-instance/<ns>`                                  |
+| Image-build project      | `nextflow-image-build-<ns>`                                         |
+| Work/results bucket      | `<groupName>-<ns>-<account-id>` (or your `s3BucketName`)            |

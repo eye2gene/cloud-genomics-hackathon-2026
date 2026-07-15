@@ -10,7 +10,6 @@
 >
 > - Do **not** use it in production, or with sensitive / identifiable data, without your own
 >   thorough security review and testing.
-> - Run it only in a **sandbox / throwaway AWS account** that you control.
 > - **You** are responsible for all AWS costs and for reviewing the IAM permissions and network
 >   configuration before you deploy.
 >
@@ -389,7 +388,7 @@ aws batch submit-job \
   --container-overrides '{
     "command": [
       "nf-core/sarek",
-      "-r", "3.5.1",
+      "-r", "3.9.0",
       "--input",  "s3://'"$BUCKET"'/benchmarks/samplesheets/wgs_'"$SCALE"'.csv",
       "--outdir", "s3://'"$BUCKET"'/benchmarks/results/'"$SCALE"'/",
       "--genome", "GATK.GRCh38",
@@ -398,7 +397,7 @@ aws batch submit-job \
   }'
 ```
 
-Always pin the pipeline revision (`-r 3.5.1`) so every run uses the **same** pipeline code — that's
+Always pin the pipeline revision (`-r 3.9.0`) so every run uses the **same** pipeline code — that's
 essential for comparable numbers.
 
 ### Recording results
@@ -424,7 +423,7 @@ steps for speed and is a natural comparison point. Swap the aligner and caller:
 
 ```jsonc
 "command": [
-  "nf-core/sarek", "-r", "3.5.1",
+  "nf-core/sarek", "-r", "3.9.0",
   "--input",   "s3://<bucket>/benchmarks/samplesheets/wgs_n1.csv",
   "--outdir",  "s3://<bucket>/benchmarks/results/n1-sentieon/",
   "--genome",  "GATK.GRCh38",
@@ -610,17 +609,17 @@ the single biggest lever on both runtime and cost — a great thing to **benchma
 - **Benchmark the storage strategies.** There's no universal winner; each trades cost, speed, and
   complexity differently. Candidates worth measuring against the same workload:
 
-  | Strategy | Gist | Trade-offs |
-  | --- | --- | --- |
-  | AWS CLI staging (current) | Copy inputs down / outputs up per task. | Simplest, no extra deps; slow on staging-bound steps. |
-  | [Mountpoint for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html) (current, for reference data) | S3 prefix as a read-mostly folder. | Great for shared read-only reference; not a general read/write scratch. |
-  | Higher-throughput [EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) (`gp3` tuned IOPS/throughput, or `io2`) | Bigger/faster network block volume for scratch. | Predictable, easy; pay for provisioned IOPS/throughput; network-bound. |
-  | **Local NVMe instance-store** | Ephemeral disks physically attached to the instance. | Fastest local scratch; data is lost on stop/interruption. Requires NVMe instance families (`d`-suffix: `c5d`, `m5ad`, `m5d`, `r5ad`, `r5d`, `i3`, `i4i`). Merge multiple NVMe disks into one big volume in the launch-template cloud-init with LVM (`pvcreate` → `vgcreate` → `lvcreate -l 100%FREE`). |
-  | [s3fs](https://github.com/s3fs-fuse/s3fs-fuse) / FUSE-over-S3 | Mount a bucket read/write via FUSE. | Easy POSIX-ish access; performance and consistency vary. |
-  | Network file share — [Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html) | Managed shared NFS across tasks. | True shared POSIX; higher latency/cost for heavy throughput. |
-  | [Amazon FSx for Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html) | High-performance parallel filesystem, S3-linked. | Excellent throughput at scale; more setup and standing cost. |
-  | [Seqera Fusion](https://docs.seqera.io/fusion) | S3 presented as POSIX, cached on local NVMe. | Fast, no explicit staging; needs privileged tasks and a Seqera licence at scale. |
-  | [JuiceFS](https://juicefs.com/docs/community/introduction/) | POSIX filesystem over S3 + a metadata engine. | Strong POSIX semantics; needs a separate metadata store (e.g. Redis via [Amazon ElastiCache](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html)). |
+| Strategy                                                                                                                            | Gist                                                 | Trade-offs                                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------| ------------------------------------------------------| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AWS CLI staging (current)                                                                                                           | Copy inputs down / outputs up per task.              | Simplest, no extra deps; slow on staging-bound steps.                                                                                                                                                                                                                                                  |
+| [Mountpoint for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mountpoint.html) (current, for reference data)            | S3 prefix as a read-mostly folder.                   | Great for shared read-only reference; not a general read/write scratch.                                                                                                                                                                                                                                |
+| Higher-throughput [EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html) (`gp3` tuned IOPS/throughput, or `io2`) | Bigger/faster network block volume for scratch.      | Predictable, easy; pay for provisioned IOPS/throughput; network-bound.                                                                                                                                                                                                                                 |
+| **Local NVMe instance-store**                                                                                                       | Ephemeral disks physically attached to the instance. | Fastest local scratch; data is lost on stop/interruption. Requires NVMe instance families (`d`-suffix: `c5d`, `m5ad`, `m5d`, `r5ad`, `r5d`, `i3`, `i4i`). Merge multiple NVMe disks into one big volume in the launch-template cloud-init with LVM (`pvcreate` → `vgcreate` → `lvcreate -l 100%FREE`). |
+| [s3fs](https://github.com/s3fs-fuse/s3fs-fuse) / FUSE-over-S3                                                                       | Mount a bucket read/write via FUSE.                  | Easy POSIX-ish access; performance and consistency vary.                                                                                                                                                                                                                                               |
+| Network file share — [Amazon EFS](https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html)                                         | Managed shared NFS across tasks.                     | True shared POSIX; higher latency/cost for heavy throughput.                                                                                                                                                                                                                                           |
+| [Amazon FSx for Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html)                                            | High-performance parallel filesystem, S3-linked.     | Excellent throughput at scale; more setup and standing cost.                                                                                                                                                                                                                                           |
+| [Seqera Fusion](https://docs.seqera.io/fusion)                                                                                      | S3 presented as POSIX, cached on local NVMe.         | Fast, no explicit staging; needs privileged tasks and a Seqera licence at scale.                                                                                                                                                                                                                       |
+| [JuiceFS](https://juicefs.com/docs/community/introduction/)                                                                         | POSIX filesystem over S3 + a metadata engine.        | Strong POSIX semantics; needs a separate metadata store (e.g. Redis via [Amazon ElastiCache](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/WhatIs.html)).                                                                                                                                    |
 
   Capture runtime **and** cost per strategy at each scale point — that comparison is itself a useful
   hackathon output.
@@ -645,6 +644,19 @@ the single biggest lever on both runtime and cost — a great thing to **benchma
   CDK makes this easy with [`Tags.of(scope).add(...)`](https://docs.aws.amazon.com/cdk/v2/guide/tagging.html)
   at the app level. This directly feeds the benchmarking cost numbers.
 - **Review CloudWatch log retention and S3 lifecycle** to keep long-running-account costs predictable.
+
+### Reproducibility and versioning
+
+- **Pin the pipeline revision.** The quick-start `submit-job` example runs `nf-core/sarek` with no
+  `-r`, so Nextflow pulls whatever is on the pipeline's **default branch at run time** — not
+  reproducible, and not a tagged release. Always pin a release (`-r 3.9.0` at the time of writing) so
+  every run uses identical pipeline code, and bump it deliberately. Keep any pins in the docs current
+  and revisit them as new releases land.
+- **Pin the Nextflow version.** The head-node image installs Nextflow via `get.nextflow.io`, which
+  grabs the **latest stable at image-build time** (currently `26.04.6`). Convenient, but a rebuild can
+  silently change the engine under you. For reproducible builds, pin it — e.g. set `NXF_VER` in the
+  head-node entrypoint or bake a specific version into `docker/nextflow-head/` — and bump on purpose.
+  Trade-off: reproducible vs. always-current.
 
 ### Testing and CI
 

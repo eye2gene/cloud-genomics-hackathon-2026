@@ -5,32 +5,6 @@ The narrative rationale for the bigger items lives in the README's
 [Potential improvements](./README.md#potential-improvements) section; this file tracks status and
 points at the exact code to change.
 
-> **Hard-won caveat — do not `systemctl restart ecs` in the launch-template `runcmd`.** On the
-> ECS-optimized AL2 AMI, `ecs.service` is ordered `After=cloud-final.service`, and `runcmd` runs
-> *inside* `cloud-final`. Restarting the agent from there deadlocks (the restart waits for the agent,
-> which can't start until `cloud-final` finishes), so the instance never joins ECS and AWS Batch
-> **invalidates the whole compute environment**. Set any `ecs.config` values from cloud-init
-> `bootcmd` (which runs *before* the agent starts) instead. Also note: AWS Batch **caches the launch
-> template `$Latest` version per compute environment** at create/update time — after changing the
-> launch template you must force affected CEs to re-resolve it (bump the `-vN` name suffix to replace
-> them); an already-`INVALID` managed CE does not self-recover.
-
-## Done (recent iteration)
-
-- [x] **Self-built head-node image works.** `lib/nextflow-ecr-stack.ts` now bakes in the
-  `docker/nextflow-head/nextflow.aws.sh` entrypoint, which generates a `nextflow.config`
-  (`process.executor = "awsbatch"`, queue, `workDir`, `aws.batch.cliPath`), restores/backs up the
-  `.nextflow` session cache to S3 for `-resume`, stages S3/git projects, and forwards `SIGTERM` to
-  cancel child jobs. Image rebuilds are content-hash triggered.
-- [x] **Work jobs default to the Spot queue; head node stays On-Demand** (`nextflow-stack.ts`).
-- [x] **Allocation strategies:** On-Demand `BEST_FIT_PROGRESSIVE` (avoids RUNNABLE wedging), Spot
-  `SPOT_PRICE_CAPACITY_OPTIMIZED` (cheaper + less interruption) — `batch-stack.ts`.
-- [x] **Scale to zero** — `minvCpus` defaults to `0`, so idle environments cost nothing.
-- [x] **Spot-interruption retry** — `aws.batch.maxSpotAttempts = 5` in the generated head config.
-- [x] **S3 lifecycle** — expire Nextflow work-dir intermediates (`workDirExpirationDays`, default 30)
-  and abort incomplete multipart uploads (`s3-stack.ts`).
-- [x] **CloudWatch log retention** set on the Batch/CodeBuild/Lambda log groups.
-
 ## High priority — correctness / functionality
 
 - [ ] **Add real test coverage.** `test/aws_batch_squared.test.ts` is a commented-out placeholder.
