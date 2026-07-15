@@ -74,7 +74,7 @@ class BatchStack(cdk.NestedStack):
         spot_compute_env = batch.CfnComputeEnvironment(
             self,
             "SpotComputeEnv",
-            compute_environment_name=f"spot-{namespace}-v4",
+            compute_environment_name=f"spot-{namespace}-v5",
             service_role=batch_service_role.role_arn,
             type="MANAGED",
             state="ENABLED",
@@ -85,7 +85,9 @@ class BatchStack(cdk.NestedStack):
                 allocation_strategy="SPOT_PRICE_CAPACITY_OPTIMIZED",
                 ec2_configuration=[
                     batch.CfnComputeEnvironment.Ec2ConfigurationObjectProperty(
-                        image_type="ECS_AL2",
+                        # Must match the AMI family in the launch template
+                        # (batchComputeAmi defaults to ECS-optimized AL2023).
+                        image_type="ECS_AL2023",
                     )
                 ],
                 launch_template=batch.CfnComputeEnvironment.LaunchTemplateSpecificationProperty(
@@ -107,7 +109,7 @@ class BatchStack(cdk.NestedStack):
         on_demand_compute_env = batch.CfnComputeEnvironment(
             self,
             "OnDemandComputeEnv",
-            compute_environment_name=f"ondemand-{namespace}-v4",
+            compute_environment_name=f"ondemand-{namespace}-v5",
             service_role=batch_service_role.role_arn,
             type="MANAGED",
             state="ENABLED",
@@ -119,7 +121,9 @@ class BatchStack(cdk.NestedStack):
                 allocation_strategy="BEST_FIT_PROGRESSIVE",
                 ec2_configuration=[
                     batch.CfnComputeEnvironment.Ec2ConfigurationObjectProperty(
-                        image_type="ECS_AL2",
+                        # Must match the AMI family in the launch template
+                        # (batchComputeAmi defaults to ECS-optimized AL2023).
+                        image_type="ECS_AL2023",
                     )
                 ],
                 launch_template=batch.CfnComputeEnvironment.LaunchTemplateSpecificationProperty(

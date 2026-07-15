@@ -5,8 +5,6 @@ user-data payload that installs the CloudWatch agent, AWS CLI v2, and Mountpoint
 for S3, then mounts the reference-data prefix.
 """
 
-from typing import Optional
-
 import aws_cdk as cdk
 from aws_cdk import aws_ec2 as ec2
 from constructs import Construct
@@ -26,12 +24,10 @@ class LaunchTemplateStack(cdk.NestedStack):
         batch_compute_ami: str,
         s3_bucket_name: str,
         s3_reference_path: str,
-        docker_storage_volume_size: Optional[int] = None,
+        root_volume_size: int = 100,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        docker_storage_volume_size = docker_storage_volume_size or 100
 
         # Create user data script (multipart MIME cloud-config + runcmd).
         user_data = ec2.UserData.for_linux()
@@ -46,15 +42,16 @@ class LaunchTemplateStack(cdk.NestedStack):
             "repo_update: true",
             "repo_upgrade: security",
             "",
+            # AL2023 package set: jq/git/unzip for the bootstrap + CloudWatch agent.
+            # Dropped vs AL2: btrfs-progs & the /dev/xvdcz docker device are AL2
+            # devicemapper-era (AL2023 uses overlay2 on root); sed & amazon-ssm-agent
+            # are preinstalled on AL2023; the `zlib` package is not present under that
+            # name on AL2023 (and the flat /opt/aws-cli bundle ships its own libs).
             "packages:",
             "- jq",
-            "- btrfs-progs",
-            "- sed",
             "- git",
-            "- amazon-ssm-agent",
             "- unzip",
             "- amazon-cloudwatch-agent",
-            "- zlib",
             "",
             "write_files:",
             "- permissions: '0644'",
@@ -140,9 +137,10 @@ class LaunchTemplateStack(cdk.NestedStack):
             "# Mount S3 reference data",
             f'- mount-s3 --allow-other s3://{s3_bucket_name}/{s3_reference_path}/ /mnt/s3-reference || echo "S3 mount failed - reference data may not be available"',
             "",
-            "# Added below logic for collecting the ecs logs on s3 for troubleshooting",
-            "- sudo /opt/ecs-additions/ecs-logs-collector.sh",
-            f"- aws s3 cp /opt/ecs-additions/collect-i*tgz s3://{s3_bucket_name}/ecs-instance-logs/",
+            "# Collect ECS logs to S3 for troubleshooting (best-effort: the ecs-additions"
+            "# path may not exist on all AMI families, so never let it fail bootstrap).",
+            "- sudo /opt/ecs-additions/ecs-logs-collector.sh || true",
+            f"- aws s3 cp /opt/ecs-additions/collect-i*tgz s3://{s3_bucket_name}/ecs-instance-logs/ || true",
             "--==BOUNDARY==--",
         )
 
@@ -153,29 +151,15 @@ class LaunchTemplateStack(cdk.NestedStack):
             launch_template_name=f"{namespace}-launch-template",
             machine_image=ec2.MachineImage.from_ssm_parameter(batch_compute_ami),
             user_data=user_data,
+            # AL2023 ECS-optimized uses overlay2 on the root volume — a single gp3
+            # root disk covers the OS, container images, and writable layers. (AL2
+            # needed the extra /dev/xvdcz devicemapper volume; not so here.) The root
+            # device name for the AL2023 ECS AMI is /dev/xvda.
             block_devices=[
                 ec2.BlockDevice(
                     device_name="/dev/xvda",
                     volume=ec2.BlockDeviceVolume.ebs(
-                        100,
-                        delete_on_termination=True,
-                        volume_type=ec2.EbsDeviceVolumeType.GP3,
-                    ),
-                ),
-                ec2.BlockDevice(
-                    device_name="/dev/xvdcz",
-                    volume=ec2.BlockDeviceVolume.ebs(
-                        22,
-                        encrypted=True,
-                        delete_on_termination=True,
-                        volume_type=ec2.EbsDeviceVolumeType.GP3,
-                    ),
-                ),
-                ec2.BlockDevice(
-                    device_name="/dev/xvdba",
-                    volume=ec2.BlockDeviceVolume.ebs(
-                        docker_storage_volume_size,
-                        encrypted=True,
+                        root_volume_size,
                         delete_on_termination=True,
                         volume_type=ec2.EbsDeviceVolumeType.GP3,
                     ),

@@ -1,5 +1,10 @@
 {
   "createVpc": true,
   "existingBucket": false,
-  "buildNextflowImage": true
+  "buildNextflowImage": true,
+  "availability-zones:account=189100467443:region=eu-west-2": [
+    "eu-west-2a",
+    "eu-west-2b",
+    "eu-west-2c"
+  ]
 }

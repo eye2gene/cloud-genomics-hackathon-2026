@@ -520,7 +520,7 @@ them in `cdk.context.json` or pass `-c key=value` on the CLI. Validation lives i
 | `s3BucketName`                        | auto                           | Workflow bucket. Auto-named `<groupName>-<namespace>-<account>` when created.                         |
 | `buildNextflowImage`                  | `true` (via context)           | If `true`, builds the head-node image via CodeBuild. If `false`, `existingNextflowImage` is required. |
 | `existingNextflowImage`               | —                              | ECR image URI to use instead of building one.                                                         |
-| `batchComputeAmi`                     | latest ECS-optimized AL2 (SSM) | AMI for compute instances; resolved from a public SSM parameter.                                      |
+| `batchComputeAmi`                     | latest ECS-optimized AL2023 (SSM) | AMI for compute instances; resolved from a public SSM parameter. If you override the AMI family, also set the Batch `image_type` in `batch_stack.py` (currently `ECS_AL2023`) and review the AL2023-specific launch-template user-data. |
 | `s3ReferencePath`                     | `reference`                    | Prefix under the bucket mounted at `/mnt/s3-reference`.                                               |
 | `onDemandMinCpus` / `onDemandMaxCpus` | `0` / `500`                    | On-Demand vCPU bounds (min 0 = scale to zero).                                                        |
 | `spotMinCpus` / `spotMaxCpus`         | `0` / `500`                    | Spot vCPU bounds.                                                                                     |

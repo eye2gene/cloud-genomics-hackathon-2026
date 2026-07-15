@@ -11,10 +11,14 @@ from typing import List, Optional
 from aws_cdk import App
 
 
-# Default AMI: the ECS-optimized Amazon Linux 2 image, resolved at deploy time
-# from its public SSM parameter.
+# Default AMI: the ECS-optimized Amazon Linux 2023 image, resolved at deploy time
+# from its public SSM parameter. AL2023 is AWS's current, long-term-supported
+# container host; Amazon Linux 2 reached end-of-maintenance on 2026-06-30.
+# NOTE: the AMI family is coupled to two other places — the Batch compute
+# environments' `image_type` (must be ECS_AL2023, see batch_stack.py) and the
+# launch-template user-data (AL2023-specific bootstrap, see launch_template_stack.py).
 DEFAULT_BATCH_COMPUTE_AMI = (
-    "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+    "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id"
 )
 
 
