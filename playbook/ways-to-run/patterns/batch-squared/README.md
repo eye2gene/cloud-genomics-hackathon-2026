@@ -47,8 +47,10 @@ Full infrastructure deployed as a single CDK stack:
 ```
 batch-squared/
 ├── README.md               ← this file
-├── infrastructure/         ← CDK stacks (full deployment)
-├── configs/                ← nextflow.config for this pattern
+├── FULL-GUIDE.md           ← detailed deployment and usage guide
+├── infrastructure/
+│   ├── python/             ← Python CDK
+│   └── typescript/         ← TypeScript CDK
 └── scripts/                ← submit job, check status, teardown
 
 ```
@@ -57,9 +59,12 @@ batch-squared/
 
 ### Option 1: Infrastructure as Code
 
-This pattern has existing CDK infrastructure (TypeScript, with a Python branch available). See `infrastructure/`.
+This pattern has working CDK infrastructure in two languages:
 
-**[TODO: Move CDK code into **`infrastructure/`** and test deploy]**
+- **Python:** `infrastructure/python/` (deploy with `cdk deploy`)
+- **TypeScript:** `infrastructure/typescript/` (deploy with `bunx aws-cdk deploy`)
+
+See the FULL-GUIDE.md for detailed deployment instructions.
 
 ### Option 2: Generate with AI
 

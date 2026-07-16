@@ -1,3 +1,6 @@
+> All paths in this guide are relative to `infrastructure/typescript/`.
+> Run `cd infrastructure/typescript/` before following the steps below.
+
 # AWS Batch Squared — Nextflow on AWS Batch
 
 > [!CAUTION]
