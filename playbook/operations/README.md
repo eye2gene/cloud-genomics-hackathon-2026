@@ -28,3 +28,7 @@ This chapter covers what happens after your pipeline runs: monitoring, cost mana
 - How do you track cost per pipeline run?
 - What are the most common failure modes and how do you recover?
 - When should you use Spot vs On-Demand?
+
+## AI Prompts
+
+See `AI-PROMPTS.md` in this folder for ready-made prompts you can paste into your AI coding assistant (Kiro, Claude, etc.) to get started.

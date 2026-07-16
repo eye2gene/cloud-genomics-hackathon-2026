@@ -39,3 +39,7 @@ For each pipeline you migrate, capture:
 - [Nextflow AWS Batch executor docs](https://www.nextflow.io/docs/latest/aws.html)
 - `reference/TROUBLESHOOTING.md` - Common issues
 - `../ways-to-run/` - Choose your execution pattern first
+
+## AI Prompts
+
+See `AI-PROMPTS.md` in this folder for ready-made prompts you can paste into your AI coding assistant (Kiro, Claude, etc.) to get started.

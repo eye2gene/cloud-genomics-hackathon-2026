@@ -26,3 +26,7 @@ This chapter is about collecting real performance data: how long things take, ho
 ## Results Template
 
 Record your results using `results/results.template.csv`. One row per benchmark run.
+
+## AI Prompts
+
+See `AI-PROMPTS.md` in this folder for ready-made prompts you can paste into your AI coding assistant (Kiro, Claude, etc.) to get started.

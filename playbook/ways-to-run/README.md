@@ -44,3 +44,7 @@ Once laptop to Batch works, explore:
 - [AWS Batch docs](https://docs.aws.amazon.com/batch/)
 - [AWS HealthOmics docs](https://docs.aws.amazon.com/omics/)
 
+
+## AI Prompts
+
+See `AI-PROMPTS.md` in this folder for ready-made prompts you can paste into your AI coding assistant (Kiro, Claude, etc.) to get started.

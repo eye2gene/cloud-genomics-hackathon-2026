@@ -1,3 +1,0 @@
-run_id,date,dataset,n_genomes,workflow,workflow_variant,pipeline_version,storage_strategy,region,head_instance,worker_instance_types,spot_or_ondemand,wall_clock_hours,total_vcpu_hours,estimated_cost_usd,cost_per_genome_usd,succeeded,notes
-sarek-bench-n1,2026-01-01,1000genomes,1,nf-core/sarek,gatk-haplotypecaller,3.5.1,aws-cli-staging,eu-west-2,,,spot,,,,,,,baseline smoke test
-sarek-bench-n1-sentieon,2026-01-01,1000genomes,1,nf-core/sarek,sentieon-haplotyper,3.5.1,aws-cli-staging,eu-west-2,,,spot,,,,,,,requires Sentieon licence
