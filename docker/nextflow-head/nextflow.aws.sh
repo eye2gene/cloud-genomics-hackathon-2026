@@ -47,7 +47,7 @@ if [ -f "$NF_CONFIG" ]; then
 // AWS Batch runtime settings (always overrides any profile settings)
 workDir = "$NF_WORKDIR"
 process.executor = "awsbatch"
-process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin"
+process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin -e MALLOC_ARENA_MAX=2 -e AWS_MAX_ATTEMPTS=5"
 process.queue = "$NF_JOB_QUEUE"
 aws.batch.cliPath = "$AWS_CLI_PATH"
 aws.region = "$AWS_REGION"
@@ -58,7 +58,7 @@ else
     cat << EOF > $NF_CONFIG
 workDir = "$NF_WORKDIR"
 process.executor = "awsbatch"
-process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin"
+process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin -e MALLOC_ARENA_MAX=2 -e AWS_MAX_ATTEMPTS=5"
 process.queue = "$NF_JOB_QUEUE"
 aws.batch.cliPath = "$AWS_CLI_PATH"
 aws.region = "$AWS_REGION"

@@ -100,6 +100,20 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       "        }",
       "      }",
       "    }",
+      "- permissions: '0644'",
+      "  path: /etc/sysctl.d/99-nf-dirty.conf",
+      "  content: |",
+      "    # Cap the dirty page-cache so large `aws s3 cp` input staging (the",
+      "    # multi-GB FASTQ/BAM/CRAM files Nextflow downloads into each task) can't",
+      "    # fill the task's memory cgroup and get OOM-killed before writeback drains.",
+      "    vm.dirty_bytes = 1258291200",
+      "    vm.dirty_background_bytes = 629145600",
+      "",
+      "bootcmd:",
+      "# Apply the dirty-page limits early (init stage, before the ECS agent or any",
+      "# task runs). sysctl -w only -- never restart a service in cloud-init here,",
+      "# that deadlocks cloud-final against ecs.service.",
+      "- sysctl -w vm.dirty_bytes=1258291200 vm.dirty_background_bytes=629145600",
       "",
       "runcmd:",
       "# start the amazon-cloudwatch-agent",
@@ -144,6 +158,11 @@ export class LaunchTemplateStack extends cdk.NestedStack {
           volume: ec2.BlockDeviceVolume.ebs(100, {
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
+            // Raise gp3 throughput/IOPS above the 125 MB/s / 3000 IOPS baseline so
+            // dirty pages from multi-GB input downloads drain to disk fast enough
+            // to stay under each task's memory cgroup (avoids OOM-kill on staging).
+            iops: 6000,
+            throughput: 500,
           }),
         },
         {
@@ -152,6 +171,8 @@ export class LaunchTemplateStack extends cdk.NestedStack {
             encrypted: true,
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
+            iops: 6000,
+            throughput: 500,
           }),
         },
         {
@@ -160,6 +181,8 @@ export class LaunchTemplateStack extends cdk.NestedStack {
             encrypted: true,
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
+            iops: 6000,
+            throughput: 500,
           }),
         },
       ],
