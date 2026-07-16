@@ -33,7 +33,7 @@ See `patterns/laptop-to-batch/` for building block descriptions, public referenc
 Once laptop to Batch works, explore:
 
 - `patterns/ec2-head-to-batch/` - persistent head node for longer-running pipelines
-- `patterns/batch-squared/` - reference CDK implementation available in this repo
+- `patterns/batch-squared/` - reference CDK implementation in `patterns/batch-squared/infrastructure/` (TypeScript, deploys full stack)
 - `patterns/health-omics/` - fully managed, no infra needed
 
 ## Reference

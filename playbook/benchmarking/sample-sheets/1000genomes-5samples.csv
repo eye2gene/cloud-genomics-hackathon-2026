@@ -1,0 +1,6 @@
+patient,sample,lane,fastq_1,fastq_2
+HG00096,HG00096,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00096/HG00096.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00096/HG00096.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz
+HG00097,HG00097,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00097/HG00097.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00097/HG00097.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz
+HG00099,HG00099,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00099/HG00099.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00099/HG00099.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz
+HG00100,HG00100,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00100/HG00100.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00100/HG00100.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz
+HG00101,HG00101,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00101/HG00101.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00101/HG00101.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz

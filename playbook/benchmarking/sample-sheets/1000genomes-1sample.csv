@@ -1,0 +1,2 @@
+patient,sample,lane,fastq_1,fastq_2
+HG00096,HG00096,1,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00096/HG00096.hiseq.wgs_graph.HG002.RMNISTHS_30x.1.fq.gz,s3://1000genomes-dragen/data/individuals/hg38-graph-based/HG00096/HG00096.hiseq.wgs_graph.HG002.RMNISTHS_30x.2.fq.gz

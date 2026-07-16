@@ -15,6 +15,8 @@ A community playbook covering:
 
 The `playbook/` folder is the playbook. Each subfolder is a chapter. Nothing is set in stone. The templates and structure are placeholders. Your group decides what the outputs look like.
 
+This repo also includes a reference CDK implementation of the "Batch Squared" pattern in `playbook/ways-to-run/patterns/batch-squared/infrastructure/`. It deploys the full stack (VPC, S3, IAM, Batch, head node container). See the Ways to Run chapter for details.
+
 ## Setup
 
 Ensure the following are available before starting:
