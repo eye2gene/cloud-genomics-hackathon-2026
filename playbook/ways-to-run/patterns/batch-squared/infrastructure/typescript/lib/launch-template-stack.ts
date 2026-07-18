@@ -148,7 +148,7 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       blockDevices: [
         {
           deviceName: "/dev/xvda",
-          volume: ec2.BlockDeviceVolume.ebs(200, {
+          volume: ec2.BlockDeviceVolume.ebs(500, {
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
           }),
