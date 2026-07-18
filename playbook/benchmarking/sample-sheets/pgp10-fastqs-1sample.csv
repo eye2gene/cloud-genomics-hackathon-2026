@@ -1,0 +1,2 @@
+patient,sex,status,sample,lane,fastq_1,fastq_2
+uk35C650,NA,0,uk35C650,L001,s3://pgp10-fastqs/uk35C650_1.fastq.gz,s3://pgp10-fastqs/uk35C650_2.fastq.gz

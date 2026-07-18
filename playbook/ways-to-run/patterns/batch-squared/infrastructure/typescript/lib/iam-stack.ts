@@ -41,6 +41,31 @@ export class IamStack extends cdk.NestedStack {
             }),
           ],
         }),
+        // Read access to public data buckets used by nf-core pipelines
+        "PublicDataBuckets-ReadOnly": new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              sid: "AllowListPublicDataBuckets",
+              effect: iam.Effect.ALLOW,
+              resources: [
+                "arn:aws:s3:::pgp10-fastqs",
+                "arn:aws:s3:::ngi-igenomes",
+                "arn:aws:s3:::1000genomes",
+              ],
+              actions: ["s3:ListBucket*"],
+            }),
+            new iam.PolicyStatement({
+              sid: "AllowGetPublicDataObjects",
+              effect: iam.Effect.ALLOW,
+              resources: [
+                "arn:aws:s3:::pgp10-fastqs/*",
+                "arn:aws:s3:::ngi-igenomes/*",
+                "arn:aws:s3:::1000genomes/*",
+              ],
+              actions: ["s3:GetObject", "s3:GetObjectVersion"],
+            }),
+          ],
+        }),
       },
     });
 

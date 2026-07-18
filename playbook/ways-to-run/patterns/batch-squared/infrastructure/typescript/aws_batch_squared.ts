@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { NextflowBatchStack } from '../lib/nextflow-batch-stack';
+import { NextflowBatchStack } from './lib/nextflow-batch-stack';
 
 export interface NextflowBatchConfig {
   namespace: string;
@@ -42,8 +42,8 @@ const config: NextflowBatchConfig = {
   onDemandMaxCpus: app.node.tryGetContext('onDemandMaxCpus') || 500,
   spotMinCpus: app.node.tryGetContext('spotMinCpus') ?? 0,
   spotMaxCpus: app.node.tryGetContext('spotMaxCpus') || 500,
-  batchOnDemandInstanceTypes: app.node.tryGetContext('batchOnDemandInstanceTypes') || 'optimal',
-  batchSpotInstanceTypes: app.node.tryGetContext('batchSpotInstanceTypes') || 'optimal',
+  batchOnDemandInstanceTypes: app.node.tryGetContext('batchOnDemandInstanceTypes') || 'c5,c5a,c5d,c6i,c6a,m5,m5a,m5d,m6i,m6a,r5,r5a,r5d,r6i,r6a',
+  batchSpotInstanceTypes: app.node.tryGetContext('batchSpotInstanceTypes') || 'c5,c5a,c5d,c6i,c6a,m5,m5a,m5d,m6i,m6a,r5,r5a,r5d,r6i,r6a',
   // Days after which Nextflow work-dir intermediates are expired from S3 (0 disables).
   // Only applies to a newly-created bucket, and only under the Nextflow work prefix.
   workDirExpirationDays: app.node.tryGetContext('workDirExpirationDays') ?? 30,
@@ -64,7 +64,9 @@ const env = {
 };
 
 // Create the main stack that orchestrates all nested stacks
-new NextflowBatchStack(app, 'NextflowBatchStack', {
+// Stack name includes groupName so multiple users can deploy independently in the same account
+const stackName = `NextflowBatchStack-${config.groupName}`;
+new NextflowBatchStack(app, stackName, {
   config,
   env,
   description: 'Deploys a base genomics workflow architecture for Nextflow on AWS Batch',

@@ -1,5 +1,5 @@
 {
-  "app": "bun bin/aws_batch_squared.ts",
+  "app": "bun aws_batch_squared.ts",
   "watch": {
     "include": [
       "**"

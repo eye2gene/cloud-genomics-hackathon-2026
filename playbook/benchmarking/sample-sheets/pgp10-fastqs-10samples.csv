@@ -1,0 +1,11 @@
+patient,sex,status,sample,lane,fastq_1,fastq_2
+uk072667,NA,0,uk072667,L001,s3://pgp10-fastqs/uk072667_1.fastq.gz,s3://pgp10-fastqs/uk072667_2.fastq.gz
+uk09B2EE,NA,0,uk09B2EE,L001,s3://pgp10-fastqs/uk09B2EE_1.fastq.gz,s3://pgp10-fastqs/uk09B2EE_2.fastq.gz
+uk09D62F,NA,0,uk09D62F,L001,s3://pgp10-fastqs/uk09D62F_1.fastq.gz,s3://pgp10-fastqs/uk09D62F_2.fastq.gz
+uk0A0D88,NA,0,uk0A0D88,L001,s3://pgp10-fastqs/uk0A0D88_1.fastq.gz,s3://pgp10-fastqs/uk0A0D88_2.fastq.gz
+uk0AD39D,NA,0,uk0AD39D,L001,s3://pgp10-fastqs/uk0AD39D_1.fastq.gz,s3://pgp10-fastqs/uk0AD39D_2.fastq.gz
+uk0C72FF,NA,0,uk0C72FF,L001,s3://pgp10-fastqs/uk0C72FF_1.fastq.gz,s3://pgp10-fastqs/uk0C72FF_2.fastq.gz
+uk0D2BB4,NA,0,uk0D2BB4,L001,s3://pgp10-fastqs/uk0D2BB4_1.fastq.gz,s3://pgp10-fastqs/uk0D2BB4_2.fastq.gz
+uk0E6FFA,NA,0,uk0E6FFA,L001,s3://pgp10-fastqs/uk0E6FFA_1.fastq.gz,s3://pgp10-fastqs/uk0E6FFA_2.fastq.gz
+uk1097F9,NA,0,uk1097F9,L001,s3://pgp10-fastqs/uk1097F9_1.fastq.gz,s3://pgp10-fastqs/uk1097F9_2.fastq.gz
+uk1115FE,NA,0,uk1115FE,L001,s3://pgp10-fastqs/uk1115FE_1.fastq.gz,s3://pgp10-fastqs/uk1115FE_2.fastq.gz

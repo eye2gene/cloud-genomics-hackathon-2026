@@ -50,6 +50,7 @@ process.executor = "awsbatch"
 process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin"
 process.queue = "$NF_JOB_QUEUE"
 aws.batch.cliPath = "$AWS_CLI_PATH"
+aws.batch.jobRole = "$NF_JOB_ROLE"
 aws.region = "$AWS_REGION"
 aws.batch.maxSpotAttempts = 5
 EOF
@@ -61,6 +62,7 @@ process.executor = "awsbatch"
 process.containerOptions = "-u 0:0 -e LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/opt/aws-cli/bin"
 process.queue = "$NF_JOB_QUEUE"
 aws.batch.cliPath = "$AWS_CLI_PATH"
+aws.batch.jobRole = "$NF_JOB_ROLE"
 aws.region = "$AWS_REGION"
 aws.batch.maxSpotAttempts = 5
 EOF
@@ -69,6 +71,16 @@ fi
 if [[ "$EFS_MOUNT" != "" ]]
 then
     echo aws.batch.volumes = [\"/mnt/efs\"] >> $NF_CONFIG
+fi
+
+# Download any additional config specified via NF_EXTRA_CONFIG_S3 env var
+if [[ -n "$NF_EXTRA_CONFIG_S3" ]]; then
+    echo "== Downloading extra config from $NF_EXTRA_CONFIG_S3 =="
+    aws s3 cp --no-progress "$NF_EXTRA_CONFIG_S3" ./extra.config
+    # Append the extra config to the generated config
+    echo "" >> $NF_CONFIG
+    echo "// Extra config from $NF_EXTRA_CONFIG_S3" >> $NF_CONFIG
+    cat ./extra.config >> $NF_CONFIG
 fi
 
 echo "=== CONFIGURATION ==="
@@ -146,6 +158,13 @@ elif [[ "$NEXTFLOW_PROJECT" =~ ^https?://github\.com/.*\.git$ ]] || [[ "$NEXTFLO
 fi
 
 echo "== Running Workflow =="
+
+# Set Nextflow secrets if provided via environment variables
+if [[ -n "$SENTIEON_LICENSE_BASE64" ]]; then
+    echo "== Setting Sentieon licence secret =="
+    nextflow secrets set SENTIEON_LICENSE_BASE64 "$SENTIEON_LICENSE_BASE64"
+fi
+
 echo "nextflow run $NEXTFLOW_PROJECT $NEXTFLOW_PARAMS"
 export NXF_ANSI_LOG=false
 nextflow run $NEXTFLOW_PROJECT $NEXTFLOW_PARAMS &

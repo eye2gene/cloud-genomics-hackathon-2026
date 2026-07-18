@@ -60,7 +60,7 @@ export class BatchStack extends cdk.NestedStack {
       this,
       "SpotComputeEnv",
       {
-        computeEnvironmentName: `spot-${props.namespace}-v4`,
+        computeEnvironmentName: `spot-${props.namespace}-v6`,
         serviceRole: props.batchServiceRole.roleArn,
         type: "MANAGED",
         state: "ENABLED",
@@ -96,7 +96,7 @@ export class BatchStack extends cdk.NestedStack {
       this,
       "OnDemandComputeEnv",
       {
-        computeEnvironmentName: `ondemand-${props.namespace}-v4`,
+        computeEnvironmentName: `ondemand-${props.namespace}-v6`,
         serviceRole: props.batchServiceRole.roleArn,
         type: "MANAGED",
         state: "ENABLED",

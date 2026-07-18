@@ -18,7 +18,7 @@ export class LaunchTemplateStack extends cdk.NestedStack {
   constructor(scope: Construct, id: string, props: LaunchTemplateStackProps) {
     super(scope, id, props);
 
-    const dockerStorageVolumeSize = props.dockerStorageVolumeSize || 100;
+    const dockerStorageVolumeSize = props.dockerStorageVolumeSize || 1000;
 
     // Create user data script
     const userData = ec2.UserData.forLinux();
@@ -140,26 +140,14 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       userData,
       blockDevices: [
         {
+          // Single root volume — Docker data-root lives here by default on ECS-optimized AL2
+          // 1 TB gp3 with high throughput for WGS FASTQ processing
           deviceName: "/dev/xvda",
-          volume: ec2.BlockDeviceVolume.ebs(100, {
-            deleteOnTermination: true,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-          }),
-        },
-        {
-          deviceName: "/dev/xvdcz",
-          volume: ec2.BlockDeviceVolume.ebs(22, {
-            encrypted: true,
-            deleteOnTermination: true,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-          }),
-        },
-        {
-          deviceName: "/dev/xvdba",
           volume: ec2.BlockDeviceVolume.ebs(dockerStorageVolumeSize, {
-            encrypted: true,
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
+            throughput: 1000, // MB/s (gp3 max)
+            iops: 16000,
           }),
         },
       ],
