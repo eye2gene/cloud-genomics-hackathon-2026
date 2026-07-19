@@ -81,6 +81,115 @@ aws batch submit-job \
   --container-overrides '{"command": ["hello-world"]}'
 
 ```
+## Example Usage
+
+1.- Deploy CDK
+```
+bun install
+bun update aws-cdk
+bun run cdk bootstrap aws://xxxxxxxxxxxxxxxxxx/eu-west-2
+bun run cdk deploy
+```
+2.- Set tower credentials (optional)
+```
+TOWER_ACCESS_TOKEN=xxxxxxxxxxxxxxx
+TOWER_WORKSPACE_ID=xxxxxxxxxxxxxxx
+export TOWER_ACCESS_TOKEN=${TOWER_ACCESS_TOKEN}
+export TOWER_WORKSPACE_ID=${TOWER_WORKSPACE_ID}
+```
+3.1- Run hello pipeline
+```
+aws batch submit-job \
+  --job-name "nf-hello-$(date +%Y%m%d-%H%M%S)" \
+  --job-queue "OnDemand-cdk-nfbatch-eu-west-2" \
+  --job-definition "nextflow-cdk-nfbatch-eu-west-2" \
+  --container-overrides "{
+      \"command\": [
+        \"hello\", \"-with-tower\"
+        ],
+      \"environment\": [
+        {\"name\": \"AWS_CLI_S3_MAX_CONCURRENT_REQUESTS\", \"value\": \"4\"},
+        {\"name\": \"TOWER_ACCESS_TOKEN\", \"value\": \"$TOWER_ACCESS_TOKEN\"},
+        {\"name\": \"TOWER_WORKSPACE_ID\", \"value\": \"$TOWER_WORKSPACE_ID\"}
+      ]
+    }" \
+  --region eu-west-2
+```
+3.2- Run Sarek test
+```
+aws batch submit-job \
+  --job-name "sarek-test-$(date +%Y%m%d-%H%M%S)" \
+  --job-queue "OnDemand-cdk-nfbatch-eu-west-2" \
+  --job-definition "nextflow-cdk-nfbatch-eu-west-2" \
+  --container-overrides "{
+    \"command\": [
+      \"nf-core/sarek\",
+      \"-r\", \"3.9.0\",
+      \"-profile\", \"test\",
+      \"--outdir\", \"s3://cdk-new1-cdk-nfbatch-eu-west-2-984214445113/results/sarek-test\",
+      \"-process.maxRetries\", \"3\",
+      \"-process.errorStrategy\", \"retry\",
+      \"-resume\", \"-with-tower\"
+    ],
+    \"environment\": [
+      {\"name\": \"AWS_CLI_S3_MAX_CONCURRENT_REQUESTS\", \"value\": \"4\"},
+      {\"name\": \"TOWER_ACCESS_TOKEN\", \"value\": \"$TOWER_ACCESS_TOKEN\"},
+      {\"name\": \"TOWER_WORKSPACE_ID\", \"value\": \"$TOWER_WORKSPACE_ID\"},
+    ]
+  }" \
+  --region eu-west-2
+```
+3.3- Run Sarek full test
+```
+aws batch submit-job \
+  --job-name "sarek-full-test-$(date +%Y%m%d-%H%M%S)" \
+  --job-queue "OnDemand-cdk-nfbatch-eu-west-2" \
+  --job-definition "nextflow-cdk-nfbatch-eu-west-2" \
+  --container-overrides "{
+    \"command\": [
+      \"nf-core/sarek\",
+      \"-r\", \"3.9.0\", 
+      \"-profile\", \"test_full\", 
+      \"--outdir\", \"s3://cdk-new1-cdk-nfbatch-eu-west-2-984214445113/results/sarek-full-test\", 
+      \"-process.maxRetries\", \"3\", 
+      \"-process.errorStrategy\", \"retry\",
+      \"-resume\", \"-with-tower\"
+    ],
+    \"environment\": [
+      {\"name\": \"AWS_CLI_S3_MAX_CONCURRENT_REQUESTS\", \"value\": \"4\"},
+      {\"name\": \"TOWER_ACCESS_TOKEN\", \"value\": \"$TOWER_ACCESS_TOKEN\"},
+      {\"name\": \"TOWER_WORKSPACE_ID\", \"value\": \"$TOWER_WORKSPACE_ID\"},
+    ]
+  }" \
+  --region eu-west-2
+```
+3.4- Run Sarek PGP S1
+```
+aws batch submit-job \
+  --job-name "sarek-pgp1-$(date +%Y%m%d-%H%M%S)" \
+  --job-queue "OnDemand-cdk-nfbatch-eu-west-2" \
+  --job-definition "nextflow-cdk-nfbatch-eu-west-2" \
+  --container-overrides "{
+    \"command\": [
+      \"nf-core/sarek\",
+      \"-r\", \"3.9.0\", 
+      \"--input\", \"s3://lconde-pgp-1/spreadsheet.csv\",
+      \"--outdir\", \"s3://cdk-new1-cdk-nfbatch-eu-west-2-984214445113/results/sarek-pgp1\", 
+      \"--genome\", \"GATK.GRCh38\",
+      \"--tools\",  \"haplotypecaller",
+      \"-process.maxRetries\", \"3\", 
+      \"-process.errorStrategy\", \"retry\",
+      \"-resume", \"-with-tower\"
+    ],
+    \"environment\": [
+      {\"name\": \"AWS_CLI_S3_MAX_CONCURRENT_REQUESTS\", \"value\": \"4\"},
+      {\"name\": \"TOWER_ACCESS_TOKEN\", \"value\": \"$TOWER_ACCESS_TOKEN\"},
+      {\"name\": \"TOWER_WORKSPACE_ID\", \"value\": \"$TOWER_WORKSPACE_ID\"}
+    ]
+  }' \
+  --region eu-west-2
+```
+
 
 ## Limitations
 

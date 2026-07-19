@@ -105,6 +105,13 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       "# start the amazon-cloudwatch-agent",
       "- /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json",
       "",
+      "# Create swap space to prevent 'Cannot allocate memory' errors during large S3 downloads",
+      "- fallocate -l 16G /swapfile",
+      "- chmod 600 /swapfile",
+      "- mkswap /swapfile",
+      "- swapon /swapfile",
+      "- echo '/swapfile swap swap defaults 0 0' >> /etc/fstab",
+      "",
       "# install aws-cli v2 and copy the static binary in an easy to find location for bind-mounts into containers",
       '- curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"',
       "- unzip -q /tmp/awscliv2.zip -d /tmp",
@@ -141,14 +148,14 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       blockDevices: [
         {
           deviceName: "/dev/xvda",
-          volume: ec2.BlockDeviceVolume.ebs(100, {
+          volume: ec2.BlockDeviceVolume.ebs(500, {
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
           }),
         },
         {
           deviceName: "/dev/xvdcz",
-          volume: ec2.BlockDeviceVolume.ebs(22, {
+          volume: ec2.BlockDeviceVolume.ebs(50, {
             encrypted: true,
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
