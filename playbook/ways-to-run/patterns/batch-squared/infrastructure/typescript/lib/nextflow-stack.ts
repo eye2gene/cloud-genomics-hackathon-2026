@@ -127,7 +127,7 @@ export class NextflowStack extends cdk.NestedStack {
         jobDefinitionName: `nextflow-${props.namespace}`,
         type: "container",
         timeout: {
-          attemptDurationSeconds: 43200,
+          attemptDurationSeconds: 864000,
         },
         containerProperties: {
           memory: 16384,

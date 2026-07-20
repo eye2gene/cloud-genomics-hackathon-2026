@@ -1,0 +1,3 @@
+patient,sex,status,sample,lane,fastq_1,fastq_2
+uk2FAAF0,NA,0,uk2FAAF0,L001,s3://pgp10-fastqs/uk2FAAF0_1.fastq.gz,s3://pgp10-fastqs/uk2FAAF0_2.fastq.gz
+ukF3D20F,NA,0,ukF3D20F,L001,s3://pgp10-fastqs/ukF3D20F_1.fastq.gz,s3://pgp10-fastqs/ukF3D20F_2.fastq.gz

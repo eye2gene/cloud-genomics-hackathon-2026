@@ -40,6 +40,11 @@ export class VpcStack extends cdk.NestedStack {
 
       cdk.Tags.of(vpc).add("Name", `${props.namespace}-vpc`);
 
+      // S3 Gateway Endpoint — routes S3 traffic directly, bypassing NAT (free, no data charges)
+      vpc.addGatewayEndpoint("S3Endpoint", {
+        service: ec2.GatewayVpcEndpointAwsService.S3,
+      });
+
       this.vpc = vpc;
       this.subnets = vpc.privateSubnets;
     } else {
