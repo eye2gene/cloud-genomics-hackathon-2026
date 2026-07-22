@@ -148,12 +148,12 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       blockDevices: [
         {
           // Single root volume — Docker data-root lives here by default on ECS-optimized AL2
-          // 500 GB gp3 with moderate throughput for WGS FASTQ processing
+          // 500 GB gp3 with 250 MB/s throughput for WGS FASTQ processing
           deviceName: "/dev/xvda",
           volume: ec2.BlockDeviceVolume.ebs(dockerStorageVolumeSize, {
             deleteOnTermination: true,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
-            throughput: 500,
+            throughput: 250,
           }),
         },
       ],
