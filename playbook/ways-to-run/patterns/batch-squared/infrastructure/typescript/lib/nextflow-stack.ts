@@ -166,6 +166,12 @@ export class NextflowStack extends cdk.NestedStack {
               name: "NF_WORKDIR",
               value: `s3://{{resolve:ssm:${props.s3BucketParam}:1}}/${s3NextflowPrefix}/${s3WorkDirPrefix}`,
             },
+            {
+              // Limit parallel S3 transfer threads to prevent memory exhaustion
+              // when downloading large FASTQs (40-50 GB PGP-UK files).
+              name: "AWS_CLI_S3_MAX_CONCURRENT_REQUESTS",
+              value: "4",
+            },
           ],
         },
       },

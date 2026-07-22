@@ -18,7 +18,7 @@ export class LaunchTemplateStack extends cdk.NestedStack {
   constructor(scope: Construct, id: string, props: LaunchTemplateStackProps) {
     super(scope, id, props);
 
-    const dockerStorageVolumeSize = props.dockerStorageVolumeSize || 600;
+    const dockerStorageVolumeSize = props.dockerStorageVolumeSize || 500;
 
     // Create user data script
     const userData = ec2.UserData.forLinux();
@@ -105,6 +105,13 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       "# start the amazon-cloudwatch-agent",
       "- /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json",
       "",
+      "# Create swap space to prevent 'Cannot allocate memory' errors during large S3 downloads",
+      "- fallocate -l 16G /swapfile",
+      "- chmod 600 /swapfile",
+      "- mkswap /swapfile",
+      "- swapon /swapfile",
+      "- echo '/swapfile swap swap defaults 0 0' >> /etc/fstab",
+      "",
       "# install aws-cli v2 and copy the static binary in an easy to find location for bind-mounts into containers",
       '- curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"',
       "- unzip -q /tmp/awscliv2.zip -d /tmp",
@@ -141,7 +148,7 @@ export class LaunchTemplateStack extends cdk.NestedStack {
       blockDevices: [
         {
           // Single root volume — Docker data-root lives here by default on ECS-optimized AL2
-          // 600 GB gp3 with moderate throughput for WGS FASTQ processing
+          // 500 GB gp3 with moderate throughput for WGS FASTQ processing
           deviceName: "/dev/xvda",
           volume: ec2.BlockDeviceVolume.ebs(dockerStorageVolumeSize, {
             deleteOnTermination: true,

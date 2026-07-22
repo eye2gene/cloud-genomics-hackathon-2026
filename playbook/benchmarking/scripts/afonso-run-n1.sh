@@ -72,6 +72,7 @@ JOB_ID=$(aws batch submit-job \
       "--input",  "s3://'"${BUCKET}"'/benchmarks/samplesheets/wgs_n1.csv",
       "--outdir", "s3://'"${BUCKET}"'/benchmarks/results/n1/",
       "--genome", "GATK.GRCh38",
+      "--aligner", "sentieon-bwamem",
       "--tools",  "haplotypecaller",
       "-with-report",
       "-with-timeline"

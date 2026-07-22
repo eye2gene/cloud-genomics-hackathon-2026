@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { NextflowBatchStack } from './lib/nextflow-batch-stack';
+import { NextflowBatchStack } from '../lib/nextflow-batch-stack';
 
 export interface NextflowBatchConfig {
   namespace: string;
